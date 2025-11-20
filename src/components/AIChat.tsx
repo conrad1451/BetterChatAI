@@ -1,6 +1,7 @@
 // AIChat.tsx
 
 import React, { useState } from "react";
+import type { ReactNode } from "react";
 import { Provider } from "react-redux";
 
 import { aiplaygroundstore } from "../aiplaygroundstore";
@@ -16,8 +17,188 @@ interface WebFormProps {
   onSubmit: (formData: { myPrompt: string }) => Promise<void>;
 }
 
+function EditableTextModule({
+  myText,
+  isEditing,
+  theFontSize,
+}: {
+  myText: string;
+  isEditing: boolean;
+  theFontSize: string;
+}) {
+  const theText = myText;
+
+  switch (theFontSize) {
+    case "h1":
+      return (
+        <h1
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h1>
+      );
+    case "h2":
+      return (
+        <h2
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h2>
+      );
+    case "h3":
+      return (
+        <h3
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h3>
+      );
+    case "h4":
+      return (
+        <h4
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h4>
+      );
+    case "h5":
+      return (
+        <h5
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h5>
+      );
+    case "h6":
+      return (
+        <h6
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h6>
+      );
+    case "p":
+      return (
+        <p
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </p>
+      );
+    default:
+      return (
+        <p
+          className={isEditing ? "hasBorder1" : "noBorder1"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </p>
+      );
+  }
+}
+
+// const DynamicLongAnswer: React.FC<DynamicComponentPropsAlt> = ({
+//   componentID,
+//   text,
+//   isProductionState,
+//   // captureState,
+// }) => {
+//   const [field, setField] = useState("");
+//   // const [myCompID, setMyCompID] = useState(componentID);
+//   const myCompID = componentID;
+
+//   return (
+//     <>
+//       <div className="multichoiceBlock">
+//         <EditableTextModule
+//           myText={String(text)}
+//           isEditing={!isProductionState}
+//           theFontSize={"p"}
+//         />
+//         <br />
+//         <label>
+//           {" "}
+//           <input
+//             type="textarea"
+//             value={field}
+//             onChange={(e) => setField(e.target.value)}
+//             size={50}
+//             aria-multiline="true"
+//             maxLength={560}
+//           />
+//         </label>
+//         <br />
+//         <p>{isProductionState ? "" : "component ID: " + myCompID}</p>
+//       </div>
+//       <br />
+//     </>
+//   );
+// };
+
+// Utility function to generate random IDs
+const randNum = () => {
+  return Math.random()
+    .toString(36)
+    .substring(2, 2 + 20);
+};
+
+// const DynamicLongAnswer: React.FC<DynamicComponentPropsAlt> = ({
+//   componentID,
+//   text,
+//   isProductionState,
+//   // captureState,
+// }) => {
+//   const [field, setField] = useState("");
+//   // const [myCompID, setMyCompID] = useState(componentID);
+//   const myCompID = componentID;
+
+//   return (
+//     <>
+//       <div className="multichoiceBlock">
+//         <EditableTextModule
+//           myText={String(text)}
+//           isEditing={!isProductionState}
+//           theFontSize={"p"}
+//         />
+//         <br />
+//         <label>
+//           <textarea // <- FIX: Use <textarea>
+//             value={field}
+//             onChange={(e) => setField(e.target.value)}
+//             rows={5} // <- Added for better textarea sizing
+//             cols={50} // <- Added for better textarea sizing
+//             maxLength={560}
+//           ></textarea>
+//         </label>
+//         <br />
+//         <p>{isProductionState ? "" : "component ID: " + myCompID}</p>
+//       </div>
+//       <br />
+//     </>
+//   );
+// };
+
 const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
   const [myPrompt, setText] = useState("");
+  const [myList, setMyList] = useState<ReactNode[]>([]);
+
+  const [myPromptHistory, setMyPromptHistory] = useState<ReactNode[]>([]);
+  const [myPromptHistoryAlt, setMyPromptHistoryAlt] = useState<string[]>([]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -30,18 +211,52 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
     }
   };
 
+  const addUniformCashflow = (inputText: string) => {
+    //   const addUniformCashflow = () => {
+    // const newComponent = React.createElement(DynamicLongAnswer, {
+    //   componentID: randNum(),
+    //   text: "Long Answer Question",
+    //   isProductionState: true,
+    //   //   isProductionState: isProduction,
+    // });
+    // setMyList([...myList, newComponent]);
+    setMyPromptHistoryAlt([
+      ...myPromptHistoryAlt,
+      //   "dsfds",
+      "\nuser prompt: " + inputText,
+    ]);
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Enter text:
-        <input
-          type="text"
-          value={myPrompt}
-          onChange={(e) => setText(e.target.value)}
-        />
-      </label>
-      <button type="submit">Submit</button>
-    </form>
+    <>
+      <div style={{ display: "flex" }}>
+        <div className="formSection" style={{ flex: 1 }}>
+          {/* {myList.map((item, index) => item)} */}
+          {/* {myList.map((item) => item)} */}
+          {myPromptHistoryAlt.map((item) => item)}
+        </div>
+      </div>
+      {/* <button className="formtoolboxbuttons" onClick={addUniformCashflow()}>
+        Add Uniform payment/cost flow
+      </button> */}
+      <form
+        onSubmit={(e) => {
+          // <- FIX: Accept the event 'e'
+          addUniformCashflow(myPrompt);
+          handleSubmit(e); // <- FIX: Pass the event 'e'
+        }}
+      >
+        <label>
+          Enter prompt:
+          <input
+            type="text"
+            value={myPrompt}
+            onChange={(e) => setText(e.target.value)}
+          />
+        </label>
+        <button type="submit">Submit</button>
+      </form>
+    </>
   );
 };
 
