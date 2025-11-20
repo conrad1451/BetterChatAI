@@ -15,6 +15,9 @@ import Dialog from "../modules/MyDialog";
 
 interface WebFormProps {
   onSubmit: (formData: { myPrompt: string }) => Promise<void>;
+  promptHistory: string[];
+  //   setPromptHistory: React.Dispatch<React.SetStateAction<string[]>>;
+  addToTextHistory: (inputText: string) => void;
 }
 
 function EditableTextModule({
@@ -193,12 +196,16 @@ const randNum = () => {
 //   );
 // };
 
-const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
+const WebForm: React.FC<WebFormProps> = ({
+  onSubmit,
+  promptHistory,
+  //   setPromptHistory,
+  addToTextHistory,
+}) => {
   const [myPrompt, setText] = useState("");
   const [myList, setMyList] = useState<ReactNode[]>([]);
 
-  const [myPromptHistory, setMyPromptHistory] = useState<ReactNode[]>([]);
-  const [myPromptHistoryAlt, setMyPromptHistoryAlt] = useState<string[]>([]);
+  //   const [myPromptHistory, setMyPromptHistory] = useState<ReactNode[]>([]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -211,38 +218,43 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
     }
   };
 
-  const addUniformCashflow = (inputText: string) => {
-    //   const addUniformCashflow = () => {
-    // const newComponent = React.createElement(DynamicLongAnswer, {
-    //   componentID: randNum(),
-    //   text: "Long Answer Question",
-    //   isProductionState: true,
-    //   //   isProductionState: isProduction,
-    // });
-    // setMyList([...myList, newComponent]);
-    setMyPromptHistoryAlt([
-      ...myPromptHistoryAlt,
-      //   "dsfds",
-      "\nuser prompt: " + inputText,
-    ]);
-  };
+  //   const addTextToHistory = (inputText: string) => {
+  //     //   const addTextToHistory = () => {
+  //     // const newComponent = React.createElement(DynamicLongAnswer, {
+  //     //   componentID: randNum(),
+  //     //   text: "Long Answer Question",
+  //     //   isProductionState: true,
+  //     //   //   isProductionState: isProduction,
+  //     // });
+  //     // setMyList([...myList, newComponent]);
+  //     setPromptHistory([
+  //       ...promptHistory,
+  //       //   "dsfds",
+  //       "\nuser prompt: " + inputText,
+  //     ]);
+  //   };
 
   return (
     <>
       <div style={{ display: "flex" }}>
         <div className="formSection" style={{ flex: 1 }}>
           {/* {myList.map((item, index) => item)} */}
-          {/* {myList.map((item) => item)} */}
-          {myPromptHistoryAlt.map((item) => item)}
+          {/* CHQ: Gemini AI helped debug prompts aligning horizontally instead of vertically*/}
+          {promptHistory.map((item, index) => (
+            <p key={index} className="promptHistoryItem">
+              {item}
+            </p>
+          ))}
         </div>
       </div>
-      {/* <button className="formtoolboxbuttons" onClick={addUniformCashflow()}>
+      {/* <button className="formtoolboxbuttons" onClick={addTextToHistory()}>
         Add Uniform payment/cost flow
       </button> */}
       <form
         onSubmit={(e) => {
           // <- FIX: Accept the event 'e'
-          addUniformCashflow(myPrompt);
+          //   addTextToHistory(myPrompt);
+          addToTextHistory(myPrompt);
           handleSubmit(e); // <- FIX: Pass the event 'e'
         }}
       >
@@ -444,6 +456,7 @@ const MyFormContainer: React.FC = () => {
   ];
 
   // const openSourceModelTokenMaximums = [32000, 8192, 8192];
+  const [myPromptHistoryAlt, setMyPromptHistoryAlt] = useState<string[]>([]);
 
   const handleFormSubmit = async (formData: { myPrompt: string }) => {
     setLoading(true);
@@ -512,13 +525,33 @@ const MyFormContainer: React.FC = () => {
       setLoading(false);
     }
   };
-
+  const addTextToHistory = (inputText: string) => {
+    //   const addTextToHistory = () => {
+    // const newComponent = React.createElement(DynamicLongAnswer, {
+    //   componentID: randNum(),
+    //   text: "Long Answer Question",
+    //   isProductionState: true,
+    //   //   isProductionState: isProduction,
+    // });
+    // setMyList([...myList, newComponent]);
+    setMyPromptHistoryAlt([
+      ...myPromptHistoryAlt,
+      //   "dsfds",
+      promptOutput,
+      "\nuser prompt: " + inputText,
+    ]);
+  };
   return (
     <div>
       {loading && <p>Loading...</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      <WebForm onSubmit={handleFormSubmit} />
+      <WebForm
+        promptHistory={myPromptHistoryAlt}
+        // setPromptHistory={setMyPromptHistoryAlt}
+        addToTextHistory={addTextToHistory}
+        onSubmit={handleFormSubmit}
+      />
       <p color="white">{promptOutput}</p>
       {/*       <p>{promptOutput}</p> */}
     </div>
