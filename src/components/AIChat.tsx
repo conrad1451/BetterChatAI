@@ -1,0 +1,371 @@
+// AIChat.tsx
+
+import React, { useState } from "react";
+import { Provider } from "react-redux";
+
+import { aiplaygroundstore } from "../aiplaygroundstore";
+
+// Import styles
+// import styles from "../features/counter/Counter.module.css";
+import "../App.css";
+
+// Import components
+import Dialog from "../modules/MyDialog";
+
+interface WebFormProps {
+  onSubmit: (formData: { myPrompt: string }) => Promise<void>;
+}
+
+const WebForm: React.FC<WebFormProps> = ({ onSubmit }) => {
+  const [myPrompt, setText] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await onSubmit({ myPrompt });
+      setText(""); // Clear the form after successful submission
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      // Handle error (e.g., show an error message)
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Enter text:
+        <input
+          type="text"
+          value={myPrompt}
+          onChange={(e) => setText(e.target.value)}
+        />
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+interface AIMessage {
+  // Define the structure of your API response here
+  content: string;
+  reasoning_content: string;
+  refusal: undefined;
+  role: string;
+  // ... other properties
+}
+
+interface AIOutputChoice {
+  // Define the structure of your API response here
+  finish_reason: string;
+  index: number;
+  logprobs: undefined;
+  message: AIMessage;
+  // ... other properties
+}
+
+interface UsageTracking {
+  completion_tokens: number;
+  prompt_tokens: number;
+  total_tokens: number;
+}
+
+interface ApiResponse {
+  // Define the structure of your API response here
+  choices: AIOutputChoice[];
+  created: number;
+  id: string;
+  model: string;
+  object: string;
+  usage: UsageTracking;
+  // ... other properties
+}
+
+// Confirmation Modal Component
+function ConfirmationModal({
+  isModalOpen,
+  confirmText,
+  cancelText,
+  confirmAction,
+  cancelAction,
+}: {
+  isModalOpen: boolean;
+  confirmText: string;
+  cancelText: string;
+  confirmAction: () => void;
+  cancelAction: () => void;
+}) {
+  return (
+    <>
+      <Dialog open={isModalOpen}>
+        <form id="form2" method="dialog">
+          <br />
+          <label htmlFor="fname">Are you sure?: </label>
+          <br />
+          <br />
+          <input
+            className="my_button"
+            type="submit"
+            onClick={confirmAction}
+            value={confirmText}
+          />
+          <input
+            className="my_button"
+            type="submit"
+            onClick={cancelAction}
+            value={cancelText}
+          />
+        </form>
+      </Dialog>
+    </>
+  );
+}
+
+function EditableTextModuleTitle({
+  myText,
+  isEditing,
+  theFontSize,
+}: {
+  myText: string;
+  // setMyText: (text: string) => void;
+  isEditing: boolean;
+  theFontSize: string;
+}) {
+  const theText = myText;
+
+  switch (theFontSize) {
+    case "h1":
+      return (
+        <h1
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h1>
+      );
+    case "h2":
+      return (
+        <h2
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h2>
+      );
+    case "h3":
+      return (
+        <h3
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h3>
+      );
+    case "h4":
+      return (
+        <h4
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h4>
+      );
+    case "h5":
+      return (
+        <h5
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h5>
+      );
+    case "h6":
+      return (
+        <h6
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </h6>
+      );
+    case "p":
+      return (
+        <p
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </p>
+      );
+    default:
+      return (
+        <p
+          className={isEditing ? "hasBorder2" : "noBorder2"}
+          contentEditable={isEditing}
+        >
+          {" "}
+          {theText}{" "}
+        </p>
+      );
+  }
+}
+
+const MyFormContainer: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [promptOutput, setPromptOutput] = useState<string>("");
+
+  const openSourceModels = [
+    "alibaba-qwen3-32b",
+    "openai-gpt-oss-120b",
+    "openai-gpt-oss-20b",
+  ];
+
+  // const openSourceModelTokenMaximums = [32000, 8192, 8192];
+
+  const handleFormSubmit = async (formData: { myPrompt: string }) => {
+    setLoading(true);
+    setErrorMessage(null); // Clear previous errors
+    setSuccessMessage(null); // Clear previous success messages
+
+    const BASE_URL = import.meta.env.VITE_AI_URL;
+    const TOKEN = import.meta.env.VITE_AI_MODEL_KEY;
+
+    const url = BASE_URL;
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${TOKEN}`,
+    };
+
+    // const myChoice: number = 1;
+    const myChoice: number = 2;
+
+    const data = {
+      model: "alibaba-qwen3-32b",
+      messages: [
+        {
+          role: "user",
+          content: "What is the capital of France?",
+        },
+      ],
+      max_tokens: 100,
+    };
+
+    const customMessage = {
+      model: openSourceModels[0],
+      messages: [
+        {
+          role: "user",
+          content: `${formData.myPrompt}`,
+        },
+      ],
+      max_tokens: 100,
+    };
+
+    const theData = myChoice === 1 ? data : customMessage;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(theData),
+      });
+
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 600) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Server error");
+        }
+        throw new Error("Failed to submit prompt to AI");
+      }
+
+      const result: ApiResponse = await response.json();
+      console.log("prompt submission successful:", result);
+      setPromptOutput(result.choices[0].message.reasoning_content);
+      // setSuccessMessage("Form submitted successfully!");
+    } catch (error) {
+      console.error("Error in propmt submission:", error);
+      setErrorMessage("Failed to submit prompt. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      {loading && <p>Loading...</p>}
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      <WebForm onSubmit={handleFormSubmit} />
+      <p color="white">{promptOutput}</p>
+      {/*       <p>{promptOutput}</p> */}
+    </div>
+  );
+};
+const AIChat = () => {
+  // const [myList, setMyList] = useState<React.ReactNode[]>([]);
+  const [isProduction, setIsProduction] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalText, setModalText] = useState({
+    confirm: "confirm",
+    cancel: "cancel",
+  });
+  const [modalActions, setModalActions] = useState({
+    confirm: () => console.log("confirm"),
+    cancel: () => setShowModal(false),
+  });
+
+  const formName = "AI Playground";
+  const formDescription = "Description of AI Playground";
+
+  return (
+    <>
+      <div className="left-part"> </div>
+      <>
+        <div className="container">
+          <Provider store={aiplaygroundstore}>
+            <div className="right-div">
+              {/* Right div content can go here */}
+              <div className="App">
+                <header className="App-header">
+                  <EditableTextModuleTitle
+                    myText={formName}
+                    // setMyText={setFormName}
+                    isEditing={!isProduction}
+                    theFontSize={"h1"}
+                  />
+                  <EditableTextModuleTitle
+                    myText={formDescription}
+                    // setMyText={setFormDescription}
+                    isEditing={!isProduction}
+                    theFontSize={"p"}
+                  />
+                  <br />
+                  <br />
+                </header>
+
+                <MyFormContainer />
+                <ConfirmationModal
+                  isModalOpen={showModal}
+                  confirmText={modalText.confirm}
+                  cancelText={modalText.cancel}
+                  confirmAction={modalActions.confirm}
+                  cancelAction={modalActions.cancel}
+                />
+              </div>
+            </div>
+          </Provider>
+        </div>
+      </>
+    </>
+  );
+};
+
+export default AIChat;
