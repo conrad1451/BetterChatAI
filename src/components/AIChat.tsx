@@ -49,7 +49,9 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
         <div className="formSection" style={{ flex: 1 }}>
           {/* {myList.map((item, index) => item)} */}
           {/* CHQ: Gemini AI helped debug prompts aligning horizontally instead of vertically*/}
-          {promptHistory.map((item, index) => (
+          {/* {promptHistory.map((item, index) => ( */}
+
+          {promptHistory.map((item) => (
             <div
               key={item.id}
               className={`chat-message-container ${item.role}`}

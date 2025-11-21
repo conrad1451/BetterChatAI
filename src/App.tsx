@@ -35,12 +35,8 @@ function OldApp() {
 }
 
 function App() {
-  return (
-    <>
-      <AIChat />
-      {/* <OldApp /> */}
-    </>
-  );
+  const myChoice: number = 2;
+  return <>{myChoice === 1 ? <AIChat /> : <OldApp />}</>;
 }
 
 export default App;
