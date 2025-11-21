@@ -12,17 +12,16 @@ import "../App.css";
 // Import components
 import Dialog from "../modules/MyDialog";
 
-interface ChatHistoryItem {
-  id: string; // Used for React keys
-  role: "user" | "ai"; // To determine styling/alignment
-  text: string;
-}
-interface WebFormProps {
-  onSubmit: (formData: { myPrompt: string }) => Promise<void>;
-  promptHistory: ChatHistoryItem[];
-  //   promptHistory: string[];
-}
+import type {
+  ChatHistoryItem,
+  WebFormProps,
+  // AIMessage,
+  // AIOutputChoice,
+  // UsageTracking,
+  ApiResponse,
+} from "../utils/dataTypes";
 
+// Utility function to generate random IDs
 const randNum = () => {
   return Math.random()
     .toString(36)
@@ -76,41 +75,6 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
     </>
   );
 };
-
-interface AIMessage {
-  // Define the structure of your API response here
-  content: string;
-  reasoning_content: string;
-  refusal: undefined;
-  role: string;
-  // ... other properties
-}
-
-interface AIOutputChoice {
-  // Define the structure of your API response here
-  finish_reason: string;
-  index: number;
-  logprobs: undefined;
-  message: AIMessage;
-  // ... other properties
-}
-
-interface UsageTracking {
-  completion_tokens: number;
-  prompt_tokens: number;
-  total_tokens: number;
-}
-
-interface ApiResponse {
-  // Define the structure of your API response here
-  choices: AIOutputChoice[];
-  created: number;
-  id: string;
-  model: string;
-  object: string;
-  usage: UsageTracking;
-  // ... other properties
-}
 
 // Confirmation Modal Component
 function ConfirmationModal({
