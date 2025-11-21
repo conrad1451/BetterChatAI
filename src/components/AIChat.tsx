@@ -1,7 +1,6 @@
 // AIChat.tsx
 
 import React, { useState } from "react";
-import type { ReactNode } from "react";
 import { Provider } from "react-redux";
 
 import { aiplaygroundstore } from "../aiplaygroundstore";
@@ -196,9 +195,6 @@ const randNum = () => {
 
 const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
   const [myPrompt, setText] = useState("");
-  //   const [myList, setMyList] = useState<ReactNode[]>([]);
-
-  //   const [myPromptHistory, setMyPromptHistory] = useState<ReactNode[]>([]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -210,22 +206,6 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
       // Handle error (e.g., show an error message)
     }
   };
-
-  //   const addTextToHistory = (inputText: string) => {
-  //     //   const addTextToHistory = () => {
-  //     // const newComponent = React.createElement(DynamicLongAnswer, {
-  //     //   componentID: randNum(),
-  //     //   text: "Long Answer Question",
-  //     //   isProductionState: true,
-  //     //   //   isProductionState: isProduction,
-  //     // });
-  //     // setMyList([...myList, newComponent]);
-  //     setPromptHistory([
-  //       ...promptHistory,
-  //       //   "dsfds",
-  //       "\nuser prompt: " + inputText,
-  //     ]);
-  //   };
 
   return (
     <>
@@ -240,9 +220,6 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
           ))}
         </div>
       </div>
-      {/* <button className="formtoolboxbuttons" onClick={addTextToHistory()}>
-        Add Uniform payment/cost flow
-      </button> */}
       <form onSubmit={handleSubmit}>
         <label>
           Enter prompt:
@@ -339,7 +316,6 @@ function EditableTextModuleTitle({
   theFontSize,
 }: {
   myText: string;
-  // setMyText: (text: string) => void;
   isEditing: boolean;
   theFontSize: string;
 }) {
@@ -465,9 +441,6 @@ const MyFormContainer: React.FC = () => {
       Authorization: `Bearer ${TOKEN}`,
     };
 
-    // const myChoice: number = 1;
-    // const myChoice: number = 2;
-
     const customMessage = {
       model: openSourceModels[0],
       messages: [
@@ -505,9 +478,6 @@ const MyFormContainer: React.FC = () => {
         // For now, just append the AI response.
         return [...prevHistory, "\nAI Response: " + aiResponseText];
       });
-
-      //   setPromptOutput(result.choices[0].message.reasoning_content);
-      // setSuccessMessage("Form submitted successfully!");
     } catch (error) {
       console.error("Error in propmt submission:", error);
       setErrorMessage("Failed to submit prompt. Please try again.");
@@ -526,7 +496,6 @@ const MyFormContainer: React.FC = () => {
   );
 };
 const AIChat = () => {
-  // const [myList, setMyList] = useState<React.ReactNode[]>([]);
   const [isProduction, setIsProduction] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalText, setModalText] = useState({
