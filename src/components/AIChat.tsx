@@ -577,8 +577,6 @@ const AIChat = () => {
                     isEditing={!isProduction}
                     theFontSize={"p"}
                   />
-                  <br />
-                  <br />
                 </header>
 
                 <MyFormContainer />
