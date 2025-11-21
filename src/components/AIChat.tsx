@@ -10,7 +10,7 @@ import { aiplaygroundstore } from "../aiplaygroundstore";
 import "../App.css";
 
 // Import components
-import Dialog from "../modules/MyDialog";
+// import Dialog from "../modules/MyDialog";
 
 import type {
   ChatHistoryItem,
@@ -81,44 +81,44 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
 };
 
 // Confirmation Modal Component
-function ConfirmationModal({
-  isModalOpen,
-  confirmText,
-  cancelText,
-  confirmAction,
-  cancelAction,
-}: {
-  isModalOpen: boolean;
-  confirmText: string;
-  cancelText: string;
-  confirmAction: () => void;
-  cancelAction: () => void;
-}) {
-  return (
-    <>
-      <Dialog open={isModalOpen}>
-        <form id="form2" method="dialog">
-          <br />
-          <label htmlFor="fname">Are you sure?: </label>
-          <br />
-          <br />
-          <input
-            className="my_button"
-            type="submit"
-            onClick={confirmAction}
-            value={confirmText}
-          />
-          <input
-            className="my_button"
-            type="submit"
-            onClick={cancelAction}
-            value={cancelText}
-          />
-        </form>
-      </Dialog>
-    </>
-  );
-}
+// function ConfirmationModal({
+//   isModalOpen,
+//   confirmText,
+//   cancelText,
+//   confirmAction,
+//   cancelAction,
+// }: {
+//   isModalOpen: boolean;
+//   confirmText: string;
+//   cancelText: string;
+//   confirmAction: () => void;
+//   cancelAction: () => void;
+// }) {
+//   return (
+//     <>
+//       <Dialog open={isModalOpen}>
+//         <form id="form2" method="dialog">
+//           <br />
+//           <label htmlFor="fname">Are you sure?: </label>
+//           <br />
+//           <br />
+//           <input
+//             className="my_button"
+//             type="submit"
+//             onClick={confirmAction}
+//             value={confirmText}
+//           />
+//           <input
+//             className="my_button"
+//             type="submit"
+//             onClick={cancelAction}
+//             value={cancelText}
+//           />
+//         </form>
+//       </Dialog>
+//     </>
+//   );
+// }
 
 function EditableTextModuleTitle({
   myText,
@@ -342,21 +342,21 @@ const MyFormContainer = (props: { modelChoice: string }) => {
 const AIChat = () => {
   // const [isProduction, setIsProduction] = useState(false);
   const isProduction = false;
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
-  const modalText = {
-    confirm: "confirm",
-    cancel: "cancel",
-  };
+  // const modalText = {
+  //   confirm: "confirm",
+  //   cancel: "cancel",
+  // };
   // const [modalText, setModalText] = useState({
   //   confirm: "confirm",
   //   cancel: "cancel",
   // });
 
-  const modalActions = {
-    confirm: () => console.log("confirm"),
-    cancel: () => setShowModal(false),
-  };
+  // const modalActions = {
+  //   confirm: () => console.log("confirm"),
+  //   cancel: () => setShowModal(false),
+  // };
 
   // const [modalActions, setModalActions] = useState({
   //   confirm: () => console.log("confirm"),
@@ -417,13 +417,13 @@ const AIChat = () => {
                 </button>
 
                 <MyFormContainer modelChoice={openSourceModels[indexChoice]} />
-                <ConfirmationModal
+                {/* <ConfirmationModal
                   isModalOpen={showModal}
                   confirmText={modalText.confirm}
                   cancelText={modalText.cancel}
                   confirmAction={modalActions.confirm}
                   cancelAction={modalActions.cancel}
-                />
+                /> */}
               </div>
             </div>
           </Provider>
