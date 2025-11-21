@@ -23,181 +23,11 @@ interface WebFormProps {
   //   promptHistory: string[];
 }
 
-function EditableTextModule({
-  myText,
-  isEditing,
-  theFontSize,
-}: {
-  myText: string;
-  isEditing: boolean;
-  theFontSize: string;
-}) {
-  const theText = myText;
-
-  switch (theFontSize) {
-    case "h1":
-      return (
-        <h1
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </h1>
-      );
-    case "h2":
-      return (
-        <h2
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </h2>
-      );
-    case "h3":
-      return (
-        <h3
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </h3>
-      );
-    case "h4":
-      return (
-        <h4
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </h4>
-      );
-    case "h5":
-      return (
-        <h5
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </h5>
-      );
-    case "h6":
-      return (
-        <h6
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </h6>
-      );
-    case "p":
-      return (
-        <p
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </p>
-      );
-    default:
-      return (
-        <p
-          className={isEditing ? "hasBorder1" : "noBorder1"}
-          contentEditable={isEditing}
-        >
-          {" "}
-          {theText}{" "}
-        </p>
-      );
-  }
-}
-
-// const DynamicLongAnswer: React.FC<DynamicComponentPropsAlt> = ({
-//   componentID,
-//   text,
-//   isProductionState,
-//   // captureState,
-// }) => {
-//   const [field, setField] = useState("");
-//   // const [myCompID, setMyCompID] = useState(componentID);
-//   const myCompID = componentID;
-
-//   return (
-//     <>
-//       <div className="multichoiceBlock">
-//         <EditableTextModule
-//           myText={String(text)}
-//           isEditing={!isProductionState}
-//           theFontSize={"p"}
-//         />
-//         <br />
-//         <label>
-//           {" "}
-//           <input
-//             type="textarea"
-//             value={field}
-//             onChange={(e) => setField(e.target.value)}
-//             size={50}
-//             aria-multiline="true"
-//             maxLength={560}
-//           />
-//         </label>
-//         <br />
-//         <p>{isProductionState ? "" : "component ID: " + myCompID}</p>
-//       </div>
-//       <br />
-//     </>
-//   );
-// };
-
-// Utility function to generate random IDs
 const randNum = () => {
   return Math.random()
     .toString(36)
     .substring(2, 2 + 20);
 };
-
-// const DynamicLongAnswer: React.FC<DynamicComponentPropsAlt> = ({
-//   componentID,
-//   text,
-//   isProductionState,
-//   // captureState,
-// }) => {
-//   const [field, setField] = useState("");
-//   // const [myCompID, setMyCompID] = useState(componentID);
-//   const myCompID = componentID;
-
-//   return (
-//     <>
-//       <div className="multichoiceBlock">
-//         <EditableTextModule
-//           myText={String(text)}
-//           isEditing={!isProductionState}
-//           theFontSize={"p"}
-//         />
-//         <br />
-//         <label>
-//           <textarea // <- FIX: Use <textarea>
-//             value={field}
-//             onChange={(e) => setField(e.target.value)}
-//             rows={5} // <- Added for better textarea sizing
-//             cols={50} // <- Added for better textarea sizing
-//             maxLength={560}
-//           ></textarea>
-//         </label>
-//         <br />
-//         <p>{isProductionState ? "" : "component ID: " + myCompID}</p>
-//       </div>
-//       <br />
-//     </>
-//   );
-// };
 
 const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
   const [myPrompt, setText] = useState("");
@@ -536,19 +366,32 @@ const MyFormContainer = (props: { modelChoice: string }) => {
   );
 };
 const AIChat = () => {
-  const [isProduction, setIsProduction] = useState(false);
+  // const [isProduction, setIsProduction] = useState(false);
+  const isProduction = false;
   const [showModal, setShowModal] = useState(false);
-  const [modalText, setModalText] = useState({
+
+  const modalText = {
     confirm: "confirm",
     cancel: "cancel",
-  });
-  const [modalActions, setModalActions] = useState({
+  };
+  // const [modalText, setModalText] = useState({
+  //   confirm: "confirm",
+  //   cancel: "cancel",
+  // });
+
+  const modalActions = {
     confirm: () => console.log("confirm"),
     cancel: () => setShowModal(false),
-  });
+  };
 
-  const formName = "AI Playground";
-  const formDescription = "Description of AI Playground";
+  // const [modalActions, setModalActions] = useState({
+  //   confirm: () => console.log("confirm"),
+  //   cancel: () => setShowModal(false),
+  // });
+
+  const formName = "Better Chat AI";
+  const formDescription =
+    "A better AI Chatbot. Time stamps all prompts and responses.";
 
   const openSourceModels = [
     "alibaba-qwen3-32b",
