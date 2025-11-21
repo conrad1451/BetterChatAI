@@ -229,6 +229,7 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
           ))}
         </div>
       </div>
+      <br></br> <br></br>
       <form onSubmit={handleSubmit}>
         <label>
           Enter prompt:
@@ -414,16 +415,10 @@ function EditableTextModuleTitle({
   }
 }
 
-const MyFormContainer: React.FC = () => {
+const MyFormContainer = (props: { modelChoice: string }) => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const openSourceModels = [
-    "alibaba-qwen3-32b",
-    "openai-gpt-oss-120b",
-    "openai-gpt-oss-20b",
-  ];
 
   // const openSourceModelTokenMaximums = [32000, 8192, 8192];
   //   const [myPromptHistoryAlt, setMyPromptHistoryAlt] = useState<string[]>([]);
@@ -464,7 +459,7 @@ const MyFormContainer: React.FC = () => {
     };
 
     const customMessage = {
-      model: openSourceModels[0],
+      model: props.modelChoice,
       messages: [
         {
           role: "user",
@@ -555,6 +550,14 @@ const AIChat = () => {
   const formName = "AI Playground";
   const formDescription = "Description of AI Playground";
 
+  const openSourceModels = [
+    "alibaba-qwen3-32b",
+    "openai-gpt-oss-120b",
+    "openai-gpt-oss-20b",
+  ];
+
+  const [indexChoice, setIndexChoice] = useState<number>(0);
+
   return (
     <>
       <div className="left-part"> </div>
@@ -578,8 +581,23 @@ const AIChat = () => {
                     theFontSize={"p"}
                   />
                 </header>
+                <button
+                  onSubmit={() => {
+                    setIndexChoice(0);
+                  }}
+                >
+                  Choose Qwen
+                </button>
+                <>{"            "}</>
+                <button
+                  onSubmit={() => {
+                    setIndexChoice(1);
+                  }}
+                >
+                  Choose Open AI (Open Source)
+                </button>
 
-                <MyFormContainer />
+                <MyFormContainer modelChoice={openSourceModels[indexChoice]} />
                 <ConfirmationModal
                   isModalOpen={showModal}
                   confirmText={modalText.confirm}
