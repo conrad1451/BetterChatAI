@@ -12,9 +12,15 @@ import "../App.css";
 // Import components
 import Dialog from "../modules/MyDialog";
 
+interface ChatHistoryItem {
+  id: string; // Used for React keys
+  role: "user" | "ai"; // To determine styling/alignment
+  text: string;
+}
 interface WebFormProps {
   onSubmit: (formData: { myPrompt: string }) => Promise<void>;
-  promptHistory: string[];
+  promptHistory: ChatHistoryItem[];
+  //   promptHistory: string[];
 }
 
 function EditableTextModule({
@@ -214,9 +220,12 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
           {/* {myList.map((item, index) => item)} */}
           {/* CHQ: Gemini AI helped debug prompts aligning horizontally instead of vertically*/}
           {promptHistory.map((item, index) => (
-            <p key={index} className="promptHistoryItem">
-              {item}
-            </p>
+            <div
+              key={item.id}
+              className={`chat-message-container ${item.role}`}
+            >
+              <p className="chat-bubble">{item.text}</p>
+            </div>
           ))}
         </div>
       </div>
@@ -417,21 +426,34 @@ const MyFormContainer: React.FC = () => {
   ];
 
   // const openSourceModelTokenMaximums = [32000, 8192, 8192];
-  const [myPromptHistoryAlt, setMyPromptHistoryAlt] = useState<string[]>([]);
-
+  //   const [myPromptHistoryAlt, setMyPromptHistoryAlt] = useState<string[]>([]);
+  const [myPromptHistoryAlt, setMyPromptHistoryAlt] = useState<
+    ChatHistoryItem[]
+  >([]);
   const handleFormSubmit = async (formData: { myPrompt: string }) => {
     setLoading(true);
     setErrorMessage(null); // Clear previous errors
     setSuccessMessage(null); // Clear previous success messages
-
     // 1. Add user prompt to history immediately
-    const userPromptText = "\nuser prompt: " + formData.myPrompt;
-    setMyPromptHistoryAlt((prevHistory) => [...prevHistory, userPromptText]);
+    const userPromptItem: ChatHistoryItem = {
+      id: randNum(), // Use the utility function defined earlier
+      role: "user",
+      text: formData.myPrompt, // Store only the text, not the prefix
+    };
 
-    // Set a placeholder for the AI response while loading (optional, but good UX)
-    // const loadingPlaceholder = "AI: Thinking...";
-    // setMyPromptHistoryAlt(prevHistory => [...prevHistory, loadingPlaceholder]);
+    // Create a temporary AI message to show while loading
+    const loadingId = randNum();
+    const loadingItem: ChatHistoryItem = {
+      id: loadingId,
+      role: "ai",
+      text: "Thinking...", // Temporary loading text
+    };
 
+    setMyPromptHistoryAlt((prevHistory) => [
+      ...prevHistory,
+      userPromptItem,
+      loadingItem,
+    ]);
     const BASE_URL = import.meta.env.VITE_AI_URL;
     const TOKEN = import.meta.env.VITE_AI_MODEL_KEY;
 
@@ -471,16 +493,39 @@ const MyFormContainer: React.FC = () => {
       const result: ApiResponse = await response.json();
       console.log("prompt submission successful:", result);
 
-      // 3. CHQ: Gemini AI: Add AI response to history
+      // 2. Add final AI response, replacing the temporary loading message
       const aiResponseText = result.choices[0].message.reasoning_content;
+
       setMyPromptHistoryAlt((prevHistory) => {
-        // You can optionally remove the placeholder here if you added one.
-        // For now, just append the AI response.
-        return [...prevHistory, "\nAI Response: " + aiResponseText];
+        // Remove the loading item and add the final response
+        const updatedHistory = prevHistory.filter(
+          (item) => item.id !== loadingId
+        );
+        const finalAIItem: ChatHistoryItem = {
+          id: randNum(), // New ID for final message
+          role: "ai",
+          text: aiResponseText,
+        };
+        return [...updatedHistory, finalAIItem];
       });
     } catch (error) {
-      console.error("Error in propmt submission:", error);
-      setErrorMessage("Failed to submit prompt. Please try again.");
+      // ... Error handling remains the same ...
+      setErrorMessage(
+        "Failed to submit prompt. Please try again." + "\n\n" + error
+      );
+
+      // If error, replace loading message with an error message
+      setMyPromptHistoryAlt((prevHistory) => {
+        const updatedHistory = prevHistory.filter(
+          (item) => item.id !== loadingId
+        );
+        const errorItem: ChatHistoryItem = {
+          id: randNum(),
+          role: "ai",
+          text: "Error: Failed to get response.",
+        };
+        return [...updatedHistory, errorItem];
+      });
     } finally {
       setLoading(false);
     }

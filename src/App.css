@@ -106,3 +106,41 @@
   display: flex;
   align-items: center; /* Vertically align items */
 }
+
+/* In your App.css */
+
+/* General Container for Alignment */
+.chat-message-container {
+  display: flex; /* Enables alignment control */
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* Base Bubble Style */
+.chat-bubble {
+  max-width: 70%; /* Limit bubble width */
+  padding: 10px 15px;
+  border-radius: 20px;
+  margin: 0;
+  word-wrap: break-word; /* Ensure text wraps */
+}
+
+/* Styles for AI Messages (Left Aligned) */
+.ai {
+  justify-content: flex-start;
+}
+.ai .chat-bubble {
+  background-color: #e0e0e0; /* Light gray background */
+  color: #333;
+  border-top-left-radius: 5px; /* Square off corner near the source */
+}
+
+/* Styles for User Messages (Right Aligned) */
+.user {
+  justify-content: flex-end; /* Push the content to the right */
+}
+.user .chat-bubble {
+  background-color: #007bff; /* Blue background */
+  color: white;
+  border-top-right-radius: 5px; /* Square off corner near the source */
+}
