@@ -581,16 +581,18 @@ const AIChat = () => {
                     theFontSize={"p"}
                   />
                 </header>
+                {/* CHQ: Gemini AI: changed onSubmit to onClick for instantaneous update of model*/}
                 <button
-                  onSubmit={() => {
+                  onClick={() => {
                     setIndexChoice(0);
                   }}
                 >
                   Choose Qwen
                 </button>
                 <>{"            "}</>
+                {/* CHQ: Gemini AI: changed onSubmit to onClick for instantaneous update of model*/}
                 <button
-                  onSubmit={() => {
+                  onClick={() => {
                     setIndexChoice(1);
                   }}
                 >
