@@ -2,6 +2,7 @@ export interface ChatHistoryItem {
   id: string; // Used for React keys
   role: "user" | "ai"; // To determine styling/alignment
   text: string;
+  time: Date;
 }
 
 export interface WebFormProps {

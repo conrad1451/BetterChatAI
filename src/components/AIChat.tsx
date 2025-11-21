@@ -51,12 +51,16 @@ const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
           {/* {promptHistory.map((item, index) => ( */}
 
           {promptHistory.map((item) => (
-            <div
-              key={item.id}
-              className={`chat-message-container ${item.role}`}
-            >
-              <p className="chat-bubble">{item.text}</p>
-            </div>
+            <>
+              <div
+                key={item.id}
+                className={`chat-message-container ${item.role}`}
+              >
+                <p className="chat-bubble">{item.text}</p>
+                <br></br> <br></br>
+                <p>{item.time.toLocaleTimeString()}</p>
+              </div>
+            </>
           ))}
         </div>
       </div>
@@ -230,6 +234,7 @@ const MyFormContainer = (props: { modelChoice: string }) => {
       id: randNum(), // Use the utility function defined earlier
       role: "user",
       text: formData.myPrompt, // Store only the text, not the prefix
+      time: new Date(),
     };
 
     // Create a temporary AI message to show while loading
@@ -238,6 +243,7 @@ const MyFormContainer = (props: { modelChoice: string }) => {
       id: loadingId,
       role: "ai",
       text: "Thinking...", // Temporary loading text
+      time: new Date(),
     };
 
     setMyPromptHistoryAlt((prevHistory) => [
@@ -296,6 +302,7 @@ const MyFormContainer = (props: { modelChoice: string }) => {
           id: randNum(), // New ID for final message
           role: "ai",
           text: aiResponseText,
+          time: new Date(),
         };
         return [...updatedHistory, finalAIItem];
       });
@@ -314,6 +321,7 @@ const MyFormContainer = (props: { modelChoice: string }) => {
           id: randNum(),
           role: "ai",
           text: "Error: Failed to get response.",
+          time: new Date(),
         };
         return [...updatedHistory, errorItem];
       });
