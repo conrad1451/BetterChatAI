@@ -16,8 +16,6 @@ import Dialog from "../modules/MyDialog";
 interface WebFormProps {
   onSubmit: (formData: { myPrompt: string }) => Promise<void>;
   promptHistory: string[];
-  //   setPromptHistory: React.Dispatch<React.SetStateAction<string[]>>;
-  addToTextHistory: (inputText: string) => void;
 }
 
 function EditableTextModule({
@@ -196,14 +194,9 @@ const randNum = () => {
 //   );
 // };
 
-const WebForm: React.FC<WebFormProps> = ({
-  onSubmit,
-  promptHistory,
-  //   setPromptHistory,
-  addToTextHistory,
-}) => {
+const WebForm: React.FC<WebFormProps> = ({ onSubmit, promptHistory }) => {
   const [myPrompt, setText] = useState("");
-  const [myList, setMyList] = useState<ReactNode[]>([]);
+  //   const [myList, setMyList] = useState<ReactNode[]>([]);
 
   //   const [myPromptHistory, setMyPromptHistory] = useState<ReactNode[]>([]);
 
@@ -250,14 +243,7 @@ const WebForm: React.FC<WebFormProps> = ({
       {/* <button className="formtoolboxbuttons" onClick={addTextToHistory()}>
         Add Uniform payment/cost flow
       </button> */}
-      <form
-        onSubmit={(e) => {
-          // <- FIX: Accept the event 'e'
-          //   addTextToHistory(myPrompt);
-          addToTextHistory(myPrompt);
-          handleSubmit(e); // <- FIX: Pass the event 'e'
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <label>
           Enter prompt:
           <input
@@ -447,7 +433,6 @@ const MyFormContainer: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [promptOutput, setPromptOutput] = useState<string>("");
 
   const openSourceModels = [
     "alibaba-qwen3-32b",
@@ -463,6 +448,14 @@ const MyFormContainer: React.FC = () => {
     setErrorMessage(null); // Clear previous errors
     setSuccessMessage(null); // Clear previous success messages
 
+    // 1. Add user prompt to history immediately
+    const userPromptText = "\nuser prompt: " + formData.myPrompt;
+    setMyPromptHistoryAlt((prevHistory) => [...prevHistory, userPromptText]);
+
+    // Set a placeholder for the AI response while loading (optional, but good UX)
+    // const loadingPlaceholder = "AI: Thinking...";
+    // setMyPromptHistoryAlt(prevHistory => [...prevHistory, loadingPlaceholder]);
+
     const BASE_URL = import.meta.env.VITE_AI_URL;
     const TOKEN = import.meta.env.VITE_AI_MODEL_KEY;
 
@@ -473,18 +466,7 @@ const MyFormContainer: React.FC = () => {
     };
 
     // const myChoice: number = 1;
-    const myChoice: number = 2;
-
-    const data = {
-      model: "alibaba-qwen3-32b",
-      messages: [
-        {
-          role: "user",
-          content: "What is the capital of France?",
-        },
-      ],
-      max_tokens: 100,
-    };
+    // const myChoice: number = 2;
 
     const customMessage = {
       model: openSourceModels[0],
@@ -497,8 +479,7 @@ const MyFormContainer: React.FC = () => {
       max_tokens: 100,
     };
 
-    const theData = myChoice === 1 ? data : customMessage;
-
+    const theData = customMessage; // Removed redundant myChoice logic
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -516,7 +497,16 @@ const MyFormContainer: React.FC = () => {
 
       const result: ApiResponse = await response.json();
       console.log("prompt submission successful:", result);
-      setPromptOutput(result.choices[0].message.reasoning_content);
+
+      // 3. CHQ: Gemini AI: Add AI response to history
+      const aiResponseText = result.choices[0].message.reasoning_content;
+      setMyPromptHistoryAlt((prevHistory) => {
+        // You can optionally remove the placeholder here if you added one.
+        // For now, just append the AI response.
+        return [...prevHistory, "\nAI Response: " + aiResponseText];
+      });
+
+      //   setPromptOutput(result.choices[0].message.reasoning_content);
       // setSuccessMessage("Form submitted successfully!");
     } catch (error) {
       console.error("Error in propmt submission:", error);
@@ -525,35 +515,13 @@ const MyFormContainer: React.FC = () => {
       setLoading(false);
     }
   };
-  const addTextToHistory = (inputText: string) => {
-    //   const addTextToHistory = () => {
-    // const newComponent = React.createElement(DynamicLongAnswer, {
-    //   componentID: randNum(),
-    //   text: "Long Answer Question",
-    //   isProductionState: true,
-    //   //   isProductionState: isProduction,
-    // });
-    // setMyList([...myList, newComponent]);
-    setMyPromptHistoryAlt([
-      ...myPromptHistoryAlt,
-      //   "dsfds",
-      promptOutput,
-      "\nuser prompt: " + inputText,
-    ]);
-  };
+  // CHQ: Gemini AI removed addTextToHistory
   return (
     <div>
       {loading && <p>Loading...</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      <WebForm
-        promptHistory={myPromptHistoryAlt}
-        // setPromptHistory={setMyPromptHistoryAlt}
-        addToTextHistory={addTextToHistory}
-        onSubmit={handleFormSubmit}
-      />
-      <p color="white">{promptOutput}</p>
-      {/*       <p>{promptOutput}</p> */}
+      <WebForm promptHistory={myPromptHistoryAlt} onSubmit={handleFormSubmit} />
     </div>
   );
 };
